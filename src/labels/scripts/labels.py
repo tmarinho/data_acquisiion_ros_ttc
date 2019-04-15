@@ -81,20 +81,18 @@ class LabelGenerator:
                     self.obstacle_y))
 
 
-
   def ground_truth_talker(self):
 
     rospy.init_node('labels')
     rospy.Subscriber('/vicon/jim', PoseStamped, self.callback_robot)
     rospy.Subscriber('/vicon/pam', PoseStamped, self.callback_obstacle)
-
     publisher_los = rospy.Publisher('rho_dot', Float32, queue_size = 10)
     # publisher_los_rate = rospy('los_rate')
     # publisher_ttc = rospy('ttc')
     rate = rospy.Rate(VICON_RATE) #Hz
     multirate_counter = 0
+
     while not rospy.is_shutdown():
-      
       # Publishes at VICON_RATE/MULTIRATE Hz
       if multirate_counter == MULTIRATE:
         rho = cp.copy(self.buffer_rho)
@@ -105,6 +103,7 @@ class LabelGenerator:
         rospy.loginfo('Rho_dot:{}'.format(rho_dot))
         self.buffer = []
         multirate_counter = 0
+
       multirate_counter = multirate_counter + 1
       rate.sleep()
 
