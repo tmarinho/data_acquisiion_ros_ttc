@@ -1,0 +1,8 @@
+prefix=/home/thiago/ws/devel
+
+Name: libmotioncapture
+Description: Description of libmotioncapture
+Version: 0.0.1
+Cflags: -I/home/thiago/ws/src/libmotioncapture/include
+Libs: -L/home/thiago/ws/devel/lib -llibmotioncapture
+Requires: 

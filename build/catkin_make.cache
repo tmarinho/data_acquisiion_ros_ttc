@@ -1,0 +1,2 @@
+dataac:labels:libmotioncapture:vicon_stream
+-DCATKIN_DEVEL_PREFIX=/home/thiago/ws/devel -DCMAKE_INSTALL_PREFIX=/home/thiago/ws/install -G Unix Makefiles

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>vicon_stream</name>
+  <version>0.0.0</version>
+  <description>The vicon_stream package</description>
+
+  <maintainer email="lakshma2@illinois.edu">arun</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>libmotioncapture</depend>
+  <depend>roscpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+
+</package>

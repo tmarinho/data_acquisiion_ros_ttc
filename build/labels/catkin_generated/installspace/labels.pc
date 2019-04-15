@@ -1,0 +1,8 @@
+prefix=/home/thiago/ws/install
+
+Name: labels
+Description: Description of labels
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/thiago/ws/install/lib 
+Requires: 

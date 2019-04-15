@@ -1,0 +1,8 @@
+prefix=/home/thiago/ws/devel
+
+Name: dataac
+Description: Description of dataac
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/thiago/ws/devel/lib 
+Requires: 

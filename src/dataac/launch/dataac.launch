@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="cv_camera" type="cv_camera_node" name="cam_left" output="screen" >
+    <rosparam>
+      device_id: 1
+      image_width: 480
+      image_height: 270
+      rate: 15
+    </rosparam>
+  </node>
+  <node pkg="cv_camera" type="cv_camera_node" name="cam_right" output="screen" >
+    <rosparam>
+      device_id: 2
+      image_width: 480
+      image_height: 270
+      rate: 15
+    </rosparam>
+  </node>
+  <node pkg="cv_camera" type="cv_camera_node" name="cam_center" output="screen" >
+    <rosparam>
+      device_id: 3
+      image_width: 480
+      image_height: 270
+      rate: 15
+    </rosparam>
+  </node>
+  <node pkg="vicon_stream" type="vicon_stream" name="vicon" output="screen" >
+    <rosparam>
+      vicon_host_name: 192.168.1.2
+    </rosparam>
+  </node>
+	<node pkg="labels" type="labels.py" name="labels" output="screen"/>
+	
+</launch>
