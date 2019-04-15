@@ -11,6 +11,7 @@ import copy as cp
 MULTIRATE = 6
 VICON_RATE = 100.0
 VICON_SAMPLE_TIME = 1.0/VICON_RATE
+
 class LabelGenerator:
   """Computes ground truth (labels) based on Vicon stream.
      Reads 2 consecutive Vicon measurements from robots
@@ -19,8 +20,12 @@ class LabelGenerator:
      -collision (TTC) and LOS rate."""
 
   def __init__(self):
-    self.x = 0
-    self.buffer = []
+    self.robot_x = 0
+    self.robot_y = 0
+    self.obstacle_x = 0
+    self.obstacle_y = 0
+    self.buffer_LOS = []
+    self.buffer_rho = []
 
   def sg_filter(self, x, m, k=0):
     """
@@ -51,17 +56,39 @@ class LabelGenerator:
     yd = y2 - y1
     return math.atan2(xd, yd)
 
-  def callback(self, msg):
-    self.x = msg.pose.position.x
-    self.y = msg.pose.position.y
-    self.buffer.append(self.x)
+  def distance(self, x1, y1, x2, y2):
+    xd = x2 - x1
+    yd = y2 - y1
+    return math.sqrt(xd**2 + yd**2)
+
+  def callback_robot(self, msg):
+    self.robot_x = msg.pose.position.x
+    self.robot_y = msg.pose.position.y
+  
+  def callback_obstacle(self, msg):
+    self.obsacle_x = msg.pose.position.x
+    self.obstacle_y = msg.pose.position.y
+    self.buffer_rho.append(
+      self.distance(self.robot_x,
+                    self.robot_y,
+                    self.obstacle_x,
+                    self.obstacle_y))
+
+    self.buffer_LOS.append(
+      self.distance(self.robot_x,
+                    self.robot_y,
+                    self.obstacle_x,
+                    self.obstacle_y))
+
 
 
   def ground_truth_talker(self):
 
     rospy.init_node('labels')
-    rospy.Subscriber('/vicon/jim', PoseStamped, self.callback)
-    publisher_los = rospy.Publisher('los', Float32, queue_size = 10)
+    rospy.Subscriber('/vicon/jim', PoseStamped, self.callback_robot)
+    rospy.Subscriber('/vicon/pam', PoseStamped, self.callback_obstacle)
+
+    publisher_los = rospy.Publisher('rho_dot', Float32, queue_size = 10)
     # publisher_los_rate = rospy('los_rate')
     # publisher_ttc = rospy('ttc')
     rate = rospy.Rate(VICON_RATE) #Hz
@@ -70,12 +97,12 @@ class LabelGenerator:
       
       # Publishes at VICON_RATE/MULTIRATE Hz
       if multirate_counter == MULTIRATE:
-        position = cp.copy(self.buffer)
-        m = len(position)
+        rho = cp.copy(self.buffer_rho)
+        m = len(rho)
         t = np.array([x*VICON_SAMPLE_TIME for x in range(0,m)])
-        velocity_x = self.smooth(t, position, 2 , deriv=1)
-        publisher_los.publish(velocity_x)
-        rospy.loginfo('Velocity:{}'.format(velocity_x))
+        rho_dot = self.smooth(t, rho, 2 , deriv=1)
+        publisher_los.publish(rho_dot)
+        rospy.loginfo('Rho_dot:{}'.format(rho_dot))
         self.buffer = []
         multirate_counter = 0
       multirate_counter = multirate_counter + 1
@@ -89,10 +116,3 @@ if __name__ == '__main__':
   except rospy.ROSInterruptException:
     pass
 
-
-    # t, pos = load(data)
-    # params = (t, pos, size, order)
-
-    # plots = [
-    #     ["Position",     pos],
-    #     ["Velocity",     smooth(*params, deriv=1)],
